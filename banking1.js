@@ -13,15 +13,22 @@ function updateTotalField(totalId,InputAmount) {
   Total.innerText = newDepoTotal;
 }
 
-function updateBalance(balanceTotal, InputAmount ,isAdd  ) {
-  const mainBalance = document.getElementById(balanceTotal);
-  const previousBalance = mainBalance.innerText;
+function getCurrentBalance() {
+    const mainBalance = document.getElementById("balance-total");
+  const previousBalanceText = mainBalance.innerText;
+  const previousBalance = parseFloat(previousBalanceText);
+  return previousBalance;
+}
+
+function updateBalance(InputAmount ,isAdd  ) {
+   const mainBalance = document.getElementById("balance-total");
+  const previousBalance = getCurrentBalance();
   if (isAdd == true) {
-    const totalBalance = parseFloat(previousBalance) + parseFloat(InputAmount);
+    const totalBalance = previousBalance + parseFloat(InputAmount);
     mainBalance.innerText = totalBalance;
   }
   else {
-    const totalBalance = parseFloat(previousBalance) - parseFloat(InputAmount);
+    const totalBalance = previousBalance - parseFloat(InputAmount);
      mainBalance.innerText = totalBalance;
   }
  
@@ -29,18 +36,24 @@ function updateBalance(balanceTotal, InputAmount ,isAdd  ) {
 
 //deposit
 document.getElementById("deposit-btn").addEventListener("click", function () {
-    const InputAmount = getInputValue("deposit-input");
-    updateTotalField('depo-total' , InputAmount);
-  ////balance add when deposit
-  updateBalance("balance-total", InputAmount ,true);
-  depoInput.value = "";
+  const InputAmount = getInputValue("deposit-input");
+  if (InputAmount > 0) {
+    updateTotalField("depo-total", InputAmount);
+    ////balance add when deposit
+    updateBalance( InputAmount, true);
+  } 
 });
 
 //widthdraw
 document.getElementById("widthdraw-btn").addEventListener("click", function () {
-    const InputAmount = getInputValue("widthdraw-input");
+  const InputAmount = getInputValue("widthdraw-input");
+  const currentBalance = getCurrentBalance();
+  if (InputAmount > 0 && InputAmount < currentBalance) {
     updateTotalField("widthdraw-total", InputAmount);
-  ////balance when widthdraw
-  updateBalance("balance-total", InputAmount,false);
-  previousBalance.value = "";
+    ////balance when widthdraw
+    updateBalance(InputAmount, false);
+  }
+  // if (InputAmount > currentBalance) {
+  //   console.log('you cant widthhdrow balance')
+  // }
 });
